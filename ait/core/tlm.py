@@ -22,9 +22,9 @@ import collections.abc
 import csv
 import os
 import struct
+from importlib.resources import files
 from io import IOBase
 
-import pkg_resources
 import yaml
 
 import ait
@@ -744,7 +744,7 @@ class PacketExpression:
     """PacketExpression
 
     A Packet Expression is a simple mathematical expression that can
-    be evaluted in the context of a Packet.  Names in the formula
+    be evaluated in the context of a Packet.  Names in the formula
     refer to fields in the packet.
 
     Packet Expressions provide a convenient mechanism to express and
@@ -1096,7 +1096,7 @@ def getDefaultDict(reload=False):  # noqa
 
 
 def getDefaultSchema():  # noqa
-    return pkg_resources.resource_filename("ait.core", "data/tlm_schema.json")
+    return str(files("ait.core").joinpath("data/tlm_schema.json"))
 
 
 def getDefaultDictFilename():  # noqa

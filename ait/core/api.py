@@ -27,7 +27,6 @@ import collections.abc
 import inspect
 import json
 import os
-import pickle
 import socket
 import time
 
@@ -92,8 +91,10 @@ class FalseWaitError(Exception):
 
     @property
     def msg(self):
-        s = 'FalseWaitError: "False" boolean passed as argument to wait. Ensure wait ' \
+        s = (
+            'FalseWaitError: "False" boolean passed as argument to wait. Ensure wait '
             'condition args are surrounded by lambda or " "'
+        )
 
         if self._msg:
             s += ": " + self._msg
@@ -110,7 +111,6 @@ class CmdAPI:
     """
 
     def __init__(self, udp_dest=None, cmddict=None, verbose=False, cmdtopic=None):
-
         if cmddict is None:
             cmddict = cmd.getDefaultCmdDict()
 
@@ -586,7 +586,6 @@ class TlmMonitor(gevent.Greenlet):
                 gevent.sleep(0)
                 msg = self._sub.recv_multipart()
                 topic, message = serv_utils.decode_message(msg)
-                message = pickle.loads(message)
 
                 if topic is None or message is None:
                     log.error(f"{self} received invalid topic or message. Skipping")
@@ -847,7 +846,9 @@ class UIAPI(object):
             log.error("User prompt request failed due to too many redirects")
             ret = None
         except requests.exceptions.Timeout:
-            raise APITimeoutError(timeout=conn_timeout, msg="User confirm prompt timed out")
+            raise APITimeoutError(
+                timeout=conn_timeout, msg="User confirm prompt timed out"
+            )
         except KeyError:
             log.error("User prompt request received malformed response")
             ret = None

@@ -11,11 +11,8 @@
 # laws and regulations. User has the responsibility to obtain export licenses,
 # or other export authority as may be required before exporting such
 # information to foreign countries or providing access to foreign persons.
-
 from collections import defaultdict
-import pickle
 
-import gevent
 import gevent.monkey
 
 gevent.monkey.patch_all()
@@ -48,8 +45,7 @@ class TelemetryLimitMonitor(Plugin):
 
     def process(self, input_data, topic=None, **kwargs):
         try:
-            load = pickle.loads(input_data)
-            pkt_id, pkt_data = int(load[0]), load[1]
+            pkt_id, pkt_data = int(input_data[0]), input_data[1]
             packet = self.packet_dict[pkt_id]
             decoded = tlm.Packet(packet, data=bytearray(pkt_data))
         except Exception as e:

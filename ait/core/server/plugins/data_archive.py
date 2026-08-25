@@ -11,12 +11,9 @@
 # laws and regulations. User has the responsibility to obtain export licenses,
 # or other export authority as may be required before exporting such
 # information to foreign countries or providing access to foreign persons.
-
-from collections import defaultdict
-import pickle
 import importlib
+from collections import defaultdict
 
-import gevent
 import gevent.monkey
 
 gevent.monkey.patch_all()
@@ -83,8 +80,7 @@ class DataArchive(Plugin):
             **kwargs:    any args required for connected to the backend
         """
         try:
-            load = pickle.loads(input_data)
-            uid, pkt = int(load[0]), load[1]
+            uid, pkt = int(input_data[0]), input_data[1]
             defn = self.packet_dict[uid]
             decoded = tlm.Packet(defn, data=bytearray(pkt))
             self.dbconn.insert(decoded, **kwargs)

@@ -1,4 +1,3 @@
-import pickle
 import unittest
 from unittest import mock
 
@@ -8,7 +7,6 @@ from ait.core.server.handlers import PacketHandler
 
 
 class TestCCSDSPacketCheck(unittest.TestCase):
-
     # Check if packet length is at least 7 bytes
     def test_ccsds_packet_length(self):
         handler = CCSDSPacketHandler(packet_types={"01011100111": "CCSDS_HEADER"})
@@ -44,7 +42,7 @@ class TestCCSDSPacketCheck(unittest.TestCase):
         tlm_dict = tlm.getDefaultDict()
         packet_uid = tlm_dict["CCSDS_HEADER"].uid
         result = handler.handle(data)
-        self.assertEqual(packet_uid, pickle.loads(result)[0])
+        self.assertEqual(packet_uid, result[0])
 
 
 class TestHandlerClassWithInputOutputTypes(object):

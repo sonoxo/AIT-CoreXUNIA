@@ -1,9 +1,8 @@
-import pickle
 import binascii
-import ait.core.log
 
-from ait.core.server.handler import Handler
+import ait.core.log
 from ait.core import tlm
+from ait.core.server.handler import Handler
 
 
 class CCSDSPacketHandler(Handler):
@@ -95,7 +94,7 @@ class CCSDSPacketHandler(Handler):
         udf_start = primary_header_length + self.packet_secondary_header_length
         user_data_field = input_data[udf_start : udf_start + udf_length + 1]
 
-        return pickle.dumps((packet_uid, user_data_field), 2)
+        return (packet_uid, user_data_field)
 
     def comp_apid(self, server_apid):
         """
