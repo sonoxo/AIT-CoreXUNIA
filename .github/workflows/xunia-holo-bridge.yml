@@ -17,6 +17,8 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    env:
+      AIT_CONFIG: ${{ github.workspace }}/config/config.yaml
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
