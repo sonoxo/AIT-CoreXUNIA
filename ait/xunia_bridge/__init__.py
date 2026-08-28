@@ -4,7 +4,6 @@ The bridge emits normalized, provenance-carrying events. It does not authorize
 or execute spacecraft commands and it does not change AIT operational behavior.
 """
 
-from .envelope import BridgeEvent, build_event, verify_event
 from .adapter import (
     ccsds_packet,
     command_definition,
@@ -14,6 +13,7 @@ from .adapter import (
     telemetry_limit,
     telemetry_sample,
 )
+from .envelope import BridgeEvent, build_event, verify_event
 from .ndjson import dump_events, load_events
 
 __all__ = [
