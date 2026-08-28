@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Any, Mapping, Optional
+from typing import Any
+from typing import Mapping
+from typing import Optional
 
-from .envelope import BridgeEvent, build_event
+from .envelope import BridgeEvent
+from .envelope import build_event
 
 
 def _event(
