@@ -3,10 +3,15 @@
 from __future__ import annotations
 
 import json
-from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from dataclasses import asdict
+from dataclasses import dataclass
+from datetime import datetime
+from datetime import timezone
 from hashlib import sha256
-from typing import Any, Dict, Mapping, Optional
+from typing import Any
+from typing import Dict
+from typing import Mapping
+from typing import Optional
 
 
 EVENT_TYPES = {
