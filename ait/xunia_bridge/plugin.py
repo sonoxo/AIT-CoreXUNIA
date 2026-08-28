@@ -10,20 +10,31 @@ from __future__ import annotations
 
 import hmac
 import json
-from datetime import datetime, timezone
+from datetime import datetime
+from datetime import timezone
 from hashlib import sha256
 from pathlib import Path
-from typing import Any, Dict, Iterable, Mapping, Optional, Tuple
+from typing import Any
+from typing import Dict
+from typing import Iterable
+from typing import Mapping
+from typing import Optional
+from typing import Tuple
 
 import gevent
 import requests
-from gevent.queue import Full, Queue
+from gevent.queue import Full
+from gevent.queue import Queue
 
-from ait.core import limits, log, tlm
+from ait.core import limits
+from ait.core import log
+from ait.core import tlm
 from ait.core.server.plugin import Plugin
 
-from .adapter import telemetry_limit, telemetry_sample
-from .envelope import BridgeEvent, build_event
+from .adapter import telemetry_limit
+from .adapter import telemetry_sample
+from .envelope import BridgeEvent
+from .envelope import build_event
 
 
 class AitTelemetryProjector:
@@ -192,7 +203,8 @@ class XuniaHoloBridgePlugin(Plugin):
         self.http_timeout = max(0.1, float(http_timeout))
         self.queue = Queue(maxsize=max(1, int(queue_size)))
         self.packet_dict: Dict[int, Any] = {
-            definition.uid: definition for _key, definition in tlm.getDefaultDict().items()
+            definition.uid: definition
+            for _key, definition in tlm.getDefaultDict().items()
         }
         self.limit_dict: Dict[str, Dict[str, Any]] = {}
         for key, definition in limits.getDefaultDict().items():
