@@ -7,7 +7,15 @@ from typing import Any, Mapping, Optional
 from .envelope import BridgeEvent, build_event
 
 
-def _event(kind: str, *, mission: str, source: str, payload: Mapping[str, Any], observed_at: Optional[str] = None, provenance: Optional[Mapping[str, Any]] = None) -> BridgeEvent:
+def _event(
+    kind: str,
+    *,
+    mission: str,
+    source: str,
+    payload: Mapping[str, Any],
+    observed_at: Optional[str] = None,
+    provenance: Optional[Mapping[str, Any]] = None,
+) -> BridgeEvent:
     return build_event(
         kind,
         mission=mission,
@@ -18,7 +26,17 @@ def _event(kind: str, *, mission: str, source: str, payload: Mapping[str, Any], 
     )
 
 
-def telemetry_sample(*, mission: str, packet: str, field: str, value: Any, units: Optional[str] = None, observed_at: Optional[str] = None, component_id: Optional[str] = None, provenance: Optional[Mapping[str, Any]] = None) -> BridgeEvent:
+def telemetry_sample(
+    *,
+    mission: str,
+    packet: str,
+    field: str,
+    value: Any,
+    units: Optional[str] = None,
+    observed_at: Optional[str] = None,
+    component_id: Optional[str] = None,
+    provenance: Optional[Mapping[str, Any]] = None,
+) -> BridgeEvent:
     return _event(
         "TELEMETRY_SAMPLE",
         mission=mission,
@@ -35,7 +53,19 @@ def telemetry_sample(*, mission: str, packet: str, field: str, value: Any, units
     )
 
 
-def telemetry_limit(*, mission: str, packet: str, field: str, value: Any, limit: str, severity: str, observed_at: Optional[str] = None, component_id: Optional[str] = None, safety_note: Optional[str] = None, provenance: Optional[Mapping[str, Any]] = None) -> BridgeEvent:
+def telemetry_limit(
+    *,
+    mission: str,
+    packet: str,
+    field: str,
+    value: Any,
+    limit: str,
+    severity: str,
+    observed_at: Optional[str] = None,
+    component_id: Optional[str] = None,
+    safety_note: Optional[str] = None,
+    provenance: Optional[Mapping[str, Any]] = None,
+) -> BridgeEvent:
     return _event(
         "TELEMETRY_LIMIT",
         mission=mission,
@@ -54,7 +84,17 @@ def telemetry_limit(*, mission: str, packet: str, field: str, value: Any, limit:
     )
 
 
-def command_definition(*, mission: str, name: str, opcode: int, subsystem: Optional[str] = None, description: Optional[str] = None, component_id: Optional[str] = None, expected_state: Optional[str] = None, provenance: Optional[Mapping[str, Any]] = None) -> BridgeEvent:
+def command_definition(
+    *,
+    mission: str,
+    name: str,
+    opcode: int,
+    subsystem: Optional[str] = None,
+    description: Optional[str] = None,
+    component_id: Optional[str] = None,
+    expected_state: Optional[str] = None,
+    provenance: Optional[Mapping[str, Any]] = None,
+) -> BridgeEvent:
     return _event(
         "COMMAND_DEFINITION",
         mission=mission,
@@ -71,7 +111,17 @@ def command_definition(*, mission: str, name: str, opcode: int, subsystem: Optio
     )
 
 
-def command_execution(*, mission: str, name: str, status: str, observed_at: Optional[str] = None, component_id: Optional[str] = None, expected_state: Optional[str] = None, training_instruction: Optional[str] = None, provenance: Optional[Mapping[str, Any]] = None) -> BridgeEvent:
+def command_execution(
+    *,
+    mission: str,
+    name: str,
+    status: str,
+    observed_at: Optional[str] = None,
+    component_id: Optional[str] = None,
+    expected_state: Optional[str] = None,
+    training_instruction: Optional[str] = None,
+    provenance: Optional[Mapping[str, Any]] = None,
+) -> BridgeEvent:
     return _event(
         "COMMAND_EXECUTION",
         mission=mission,
@@ -88,7 +138,19 @@ def command_execution(*, mission: str, name: str, status: str, observed_at: Opti
     )
 
 
-def sequence_step(*, mission: str, sequence: str, ordinal: int, command: str, instruction: str, component_id: str, expected_state: Optional[str] = None, safety_note: Optional[str] = None, observed_at: Optional[str] = None, provenance: Optional[Mapping[str, Any]] = None) -> BridgeEvent:
+def sequence_step(
+    *,
+    mission: str,
+    sequence: str,
+    ordinal: int,
+    command: str,
+    instruction: str,
+    component_id: str,
+    expected_state: Optional[str] = None,
+    safety_note: Optional[str] = None,
+    observed_at: Optional[str] = None,
+    provenance: Optional[Mapping[str, Any]] = None,
+) -> BridgeEvent:
     return _event(
         "SEQUENCE_STEP",
         mission=mission,
@@ -107,18 +169,40 @@ def sequence_step(*, mission: str, sequence: str, ordinal: int, command: str, in
     )
 
 
-def event_record(*, mission: str, name: str, message: str, severity: str = "INFO", observed_at: Optional[str] = None, component_id: Optional[str] = None, provenance: Optional[Mapping[str, Any]] = None) -> BridgeEvent:
+def event_record(
+    *,
+    mission: str,
+    name: str,
+    message: str,
+    severity: str = "INFO",
+    observed_at: Optional[str] = None,
+    component_id: Optional[str] = None,
+    provenance: Optional[Mapping[str, Any]] = None,
+) -> BridgeEvent:
     return _event(
         "EVENT_RECORD",
         mission=mission,
         source="ait.evr:%s" % name,
         observed_at=observed_at,
         provenance=provenance,
-        payload={"name": name, "message": message, "severity": severity, "componentId": component_id},
+        payload={
+            "name": name,
+            "message": message,
+            "severity": severity,
+            "componentId": component_id,
+        },
     )
 
 
-def ccsds_packet(*, mission: str, apid: int, sequence_count: int, length: int, observed_at: Optional[str] = None, provenance: Optional[Mapping[str, Any]] = None) -> BridgeEvent:
+def ccsds_packet(
+    *,
+    mission: str,
+    apid: int,
+    sequence_count: int,
+    length: int,
+    observed_at: Optional[str] = None,
+    provenance: Optional[Mapping[str, Any]] = None,
+) -> BridgeEvent:
     return _event(
         "CCSDS_PACKET",
         mission=mission,
