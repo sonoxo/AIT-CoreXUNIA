@@ -21,7 +21,10 @@ def test_bridge_events_are_integrity_verified(tmp_path: Path):
             units="C",
             component_id="pump-body",
             observed_at="2026-08-28T20:00:00+00:00",
-            provenance={"dictionary": "representative-tlm.yaml", "sourceClass": "TEST_FIXTURE"},
+            provenance={
+                "dictionary": "representative-tlm.yaml",
+                "sourceClass": "TEST_FIXTURE",
+            },
         ),
         telemetry_limit(
             mission="REPRESENTATIVE-HX100",
