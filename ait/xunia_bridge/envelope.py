@@ -87,6 +87,16 @@ def verify_event(event: Mapping[str, Any]) -> bool:
             return False
         if event.get("event_type") not in EVENT_TYPES:
             return False
+        if event.get("marking") not in {"PUBLIC", "NON_PROPRIETARY"}:
+            return False
+        for field in ("observed_at", "mission", "source"):
+            value = event.get(field)
+            if not isinstance(value, str) or not value.strip():
+                return False
+        if not isinstance(event.get("payload"), Mapping):
+            return False
+        if not isinstance(event.get("provenance"), Mapping):
+            return False
         unsigned = {
             "schema_version": event["schema_version"],
             "event_type": event["event_type"],
