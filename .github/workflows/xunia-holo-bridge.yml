@@ -4,14 +4,14 @@ on:
   pull_request:
     paths:
       - "ait/xunia_bridge/**"
-      - "tests/ait/test_xunia_bridge.py"
+      - "tests/ait/test_xunia_bridge*.py"
       - "XUNIA-HOLO-BRIDGE.md"
       - ".github/workflows/xunia-holo-bridge.yml"
   push:
     branches: [master]
     paths:
       - "ait/xunia_bridge/**"
-      - "tests/ait/test_xunia_bridge.py"
+      - "tests/ait/test_xunia_bridge*.py"
       - "XUNIA-HOLO-BRIDGE.md"
 
 jobs:
@@ -27,9 +27,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e . pytest pytest-cov
       - name: Run bridge contract tests
-        run: pytest -q tests/ait/test_xunia_bridge.py
+        run: pytest -q tests/ait/test_xunia_bridge.py tests/ait/test_xunia_bridge_plugin.py
       - name: Truth-boundary checks
         run: |
           grep -q 'does \*\*not\*\* authorize, schedule, or transmit spacecraft commands' XUNIA-HOLO-BRIDGE.md
           grep -q 'xunia.ait.bridge/1.0' ait/xunia_bridge/envelope.py
           grep -q 'Only PUBLIC/NON_PROPRIETARY bridge markings are supported' ait/xunia_bridge/envelope.py
+          grep -q 'never.*executes AIT commands' ait/xunia_bridge/plugin.py
+          grep -q 'NDJSON spool remains authoritative' ait/xunia_bridge/plugin.py
