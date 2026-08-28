@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Dict, Iterable, Mapping, Optional
+from typing import Any, Dict, Iterable, Mapping, Optional
 
 import gevent
 import requests
@@ -20,7 +20,7 @@ from ait.core import limits, log, tlm
 from ait.core.server.plugin import Plugin
 
 from .adapter import telemetry_limit, telemetry_sample
-from .envelope import BridgeEvent
+from .envelope import BridgeEvent, build_event
 
 
 class AitTelemetryProjector:
@@ -49,8 +49,8 @@ class AitTelemetryProjector:
     def project_packet(
         self,
         packet_name: str,
-        decoded: tlm.Packet,
-        limit_definitions: Mapping[str, object],
+        decoded: Any,
+        limit_definitions: Mapping[str, Any],
         *,
         observed_at: Optional[str] = None,
     ) -> list[BridgeEvent]:
@@ -62,6 +62,12 @@ class AitTelemetryProjector:
 
             value = decoded._getattr(field_name)
             mapping = dict(self.field_map.get(key, {}))
+            component_id = mapping.get("componentId")
+            if not isinstance(component_id, str):
+                component_id = None
+            safety_note = mapping.get("safetyNote")
+            if not isinstance(safety_note, str):
+                safety_note = None
             provenance = {
                 "aitPacket": packet_name,
                 "aitField": field_name,
@@ -73,7 +79,7 @@ class AitTelemetryProjector:
                 field=field_name,
                 value=value,
                 units=getattr(field_definition, "units", None),
-                component_id=mapping.get("componentId"),
+                component_id=component_id,
                 observed_at=observed_at,
                 provenance=provenance,
             )
@@ -92,7 +98,7 @@ class AitTelemetryProjector:
             elif limit_definition.warn(value):
                 severity = "WARNING"
                 limit_name = "WARNING_LIMIT"
-            if severity is None:
+            if severity is None or limit_name is None:
                 continue
 
             limit_event = telemetry_limit(
@@ -102,8 +108,8 @@ class AitTelemetryProjector:
                 value=value,
                 limit=limit_name,
                 severity=severity,
-                component_id=mapping.get("componentId"),
-                safety_note=mapping.get("safetyNote"),
+                component_id=component_id,
+                safety_note=safety_note,
                 observed_at=observed_at,
                 provenance=provenance,
             )
@@ -114,8 +120,6 @@ class AitTelemetryProjector:
 
 
 def _with_marking(event: BridgeEvent, marking: str) -> BridgeEvent:
-    from .envelope import build_event
-
     return build_event(
         event.event_type,
         mission=event.mission,
@@ -158,10 +162,10 @@ class XuniaHoloBridgePlugin(Plugin):
         self.batch_size = max(1, int(batch_size))
         self.http_timeout = max(0.1, float(http_timeout))
         self.queue = Queue(maxsize=max(1, int(queue_size)))
-        self.packet_dict: Dict[int, object] = {
+        self.packet_dict: Dict[int, Any] = {
             definition.uid: definition for _key, definition in tlm.getDefaultDict().items()
         }
-        self.limit_dict: Dict[str, Dict[str, object]] = {}
+        self.limit_dict: Dict[str, Dict[str, Any]] = {}
         for key, definition in limits.getDefaultDict().items():
             packet_name, field_name = key.split(".", 1)
             self.limit_dict.setdefault(packet_name, {})[field_name] = definition
