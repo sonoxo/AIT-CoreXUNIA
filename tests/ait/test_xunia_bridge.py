@@ -1,14 +1,12 @@
 from pathlib import Path
 
-from ait.xunia_bridge import (
-    command_execution,
-    dump_events,
-    load_events,
-    sequence_step,
-    telemetry_limit,
-    telemetry_sample,
-    verify_event,
-)
+from ait.xunia_bridge import command_execution
+from ait.xunia_bridge import dump_events
+from ait.xunia_bridge import load_events
+from ait.xunia_bridge import sequence_step
+from ait.xunia_bridge import telemetry_limit
+from ait.xunia_bridge import telemetry_sample
+from ait.xunia_bridge import verify_event
 
 
 def test_bridge_events_are_integrity_verified(tmp_path: Path):
