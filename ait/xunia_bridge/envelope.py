@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from hashlib import sha256
-import json
 from typing import Any, Dict, Mapping, Optional
 
 
