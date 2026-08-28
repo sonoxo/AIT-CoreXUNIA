@@ -8,9 +8,12 @@ processing.
 
 from __future__ import annotations
 
+import hmac
 import json
+from datetime import datetime, timezone
+from hashlib import sha256
 from pathlib import Path
-from typing import Any, Dict, Iterable, Mapping, Optional
+from typing import Any, Dict, Iterable, Mapping, Optional, Tuple
 
 import gevent
 import requests
@@ -131,6 +134,30 @@ def _with_marking(event: BridgeEvent, marking: str) -> BridgeEvent:
     )
 
 
+def build_http_request(
+    events: Iterable[BridgeEvent],
+    *,
+    secret: Optional[str] = None,
+    timestamp: Optional[str] = None,
+) -> Tuple[str, Dict[str, str]]:
+    """Build a deterministic JSON request body and optional HMAC headers."""
+    body = json.dumps(
+        {"events": [event.to_dict() for event in events]},
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    headers = {"Content-Type": "application/json"}
+    if secret:
+        signed_at = timestamp or datetime.now(timezone.utc).isoformat()
+        signing_input = "%s.%s" % (signed_at, body)
+        digest = hmac.new(
+            secret.encode("utf-8"), signing_input.encode("utf-8"), sha256
+        ).hexdigest()
+        headers["X-Xunia-Bridge-Timestamp"] = signed_at
+        headers["X-Xunia-Bridge-Signature"] = "sha256=%s" % digest
+    return body, headers
+
+
 class XuniaHoloBridgePlugin(Plugin):
     """Mirror AIT telemetry into the XUNIA HOLO bridge without command authority."""
 
@@ -147,6 +174,7 @@ class XuniaHoloBridgePlugin(Plugin):
         marking="NON_PROPRIETARY",
         include_fields=None,
         field_map=None,
+        bridge_secret=None,
         **kwargs,
     ):
         super(XuniaHoloBridgePlugin, self).__init__(inputs, outputs, **kwargs)
@@ -159,6 +187,7 @@ class XuniaHoloBridgePlugin(Plugin):
         self.spool_path = Path(spool_path)
         self.spool_path.parent.mkdir(parents=True, exist_ok=True)
         self.endpoint = endpoint
+        self.bridge_secret = bridge_secret
         self.batch_size = max(1, int(batch_size))
         self.http_timeout = max(0.1, float(http_timeout))
         self.queue = Queue(maxsize=max(1, int(queue_size)))
@@ -211,9 +240,14 @@ class XuniaHoloBridgePlugin(Plugin):
             batch = pending[: self.batch_size]
             del pending[: self.batch_size]
             try:
+                body, headers = build_http_request(
+                    batch,
+                    secret=self.bridge_secret,
+                )
                 response = requests.post(
                     self.endpoint,
-                    json={"events": [event.to_dict() for event in batch]},
+                    data=body,
+                    headers=headers,
                     timeout=self.http_timeout,
                 )
                 response.raise_for_status()
