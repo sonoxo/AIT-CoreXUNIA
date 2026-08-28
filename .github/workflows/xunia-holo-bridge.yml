@@ -22,8 +22,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install package
-        run: pip install -e .
+      - name: Install package and test runner
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e . pytest
       - name: Run bridge contract tests
         run: pytest -q tests/ait/test_xunia_bridge.py
       - name: Truth-boundary checks
