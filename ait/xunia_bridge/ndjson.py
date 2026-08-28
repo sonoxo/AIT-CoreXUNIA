@@ -4,9 +4,13 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Iterable, List, Mapping, Union
+from typing import Iterable
+from typing import List
+from typing import Mapping
+from typing import Union
 
-from .envelope import BridgeEvent, verify_event
+from .envelope import BridgeEvent
+from .envelope import verify_event
 
 PathLike = Union[str, Path]
 
